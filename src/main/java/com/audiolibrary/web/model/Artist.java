@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 public class Artist {
 
-    @OneToMany(mappedBy = "artist", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "artist", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("artist")
     private Set<Album> albums;
 

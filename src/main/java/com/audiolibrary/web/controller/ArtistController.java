@@ -5,7 +5,6 @@ import com.audiolibrary.web.model.Album;
 import com.audiolibrary.web.model.Artist;
 import com.audiolibrary.web.repository.AlbumRepository;
 import com.audiolibrary.web.repository.ArtistRepository;
-import org.hibernate.mapping.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/artists")
@@ -106,22 +106,24 @@ public class ArtistController {
     }
 
 
-    //DELETE
+    //DELETE ARTISs
 
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteArtiste(@PathVariable ("id") Long id) {
 
-    public void deleteArtiste(@PathVariable Long id) {
+        Optional<Artist> artistOptional = artistRepository.findById(id);
 
-            Optional<Album> albumOptional = albumRepository.findAlbumByArtist(id);
+            Artist artist = artistOptional.get();
 
-            Album album = albumOptional.get();
-
-            album.getArtist();
-
+           Set<Album> albums = artist.getAlbums();
+            for (Album album : albums){
+               albumRepository.delete(album);
+            }
 
             artistRepository.deleteById(id);
-            albumRepository.delete(album);
+
 
         }
 

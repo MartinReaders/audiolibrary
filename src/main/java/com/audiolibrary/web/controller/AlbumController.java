@@ -3,6 +3,7 @@ package com.audiolibrary.web.controller;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PostLoad;
 
 
 import com.audiolibrary.web.model.Album;
@@ -26,6 +27,32 @@ public class AlbumController {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+
+    //AJOUT
+
+    @RequestMapping(method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Album ajoutAlbum(@RequestBody Album album) {
+
+        return albumRepository.save(album);
+    }
+
+
+
+
+
+    //DELETE ALBUM
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void  deletAl(@PathVariable("id") Long id){
+    if(!albumRepository.existsById(id)){
+        throw  new EntityNotFoundException("Alub " + id +" n'exist pas  ");
+    }
+    albumRepository.deleteById(id);
+    }
 
 
 
