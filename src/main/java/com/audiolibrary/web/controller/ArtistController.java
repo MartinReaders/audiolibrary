@@ -35,7 +35,9 @@ public class ArtistController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Artist getArtsite(@PathVariable(value = "id") Long id) {
         Optional<Artist> artist = artistRepository.findById(id);
-
+        if(artist.isEmpty()){
+            throw new EntityNotFoundException("Artist  " + id  + " n'existe pas");
+        }
         return artist.get();
     }
 
@@ -49,6 +51,9 @@ public class ArtistController {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "name") String sortProperty,
             @RequestParam(value = "sortDirection", defaultValue = "ASC") String sortDirection) {
+        if(name == null){
+            throw  new EntityNotFoundException("Atiste  " + name + " not found");
+        }
         if (page < 0) {
             //400
             throw new IllegalArgumentException("La param du page doit etre positif ou nul");
@@ -61,8 +66,13 @@ public class ArtistController {
             throw new IllegalArgumentException("Le paramètre sortDirection doit valoir ASC ou DESC");
         }
 
+
         Pageable pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sortDirection), sortProperty);
         Page<Artist> listeArtsites = artistRepository.findByNameContainingIgnoreCase(name, pageRequest);
+
+       // if(listeArtsites.isEmpty()){
+          //  throw  new EntityNotFoundException("Atiste  " + name + " not found");
+      //  }
         return listeArtsites;
     }
 
@@ -91,8 +101,12 @@ public class ArtistController {
     @ResponseStatus(HttpStatus.CREATED)
     public Artist creatArtiste(@RequestBody Artist artist) {
         if (artistRepository.findByName(artist.getName()) != null) {
-            throw new EntityNotFoundException("Artiste de exsite deha " + artist.getName());
+            throw new EntityNotFoundException("Artiste  " + artist.getName() + " existe ");
         }
+
+      if(artist.getName() == null){
+          throw new EntityNotFoundException("Champ vide");
+      }
         return artistRepository.save(artist);
     }
 
@@ -116,6 +130,7 @@ public class ArtistController {
         Optional<Artist> artistOptional = artistRepository.findById(id);
 
             Artist artist = artistOptional.get();
+
 
            Set<Album> albums = artist.getAlbums();
             for (Album album : albums){

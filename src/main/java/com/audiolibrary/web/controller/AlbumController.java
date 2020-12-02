@@ -37,6 +37,12 @@ public class AlbumController {
     @ResponseStatus(HttpStatus.CREATED)
     public Album ajoutAlbum(@RequestBody Album album) {
 
+        if(album.getTitle() == null){
+            throw new EntityNotFoundException("Champ album vide");
+        }
+
+
+
         return albumRepository.save(album);
     }
 
